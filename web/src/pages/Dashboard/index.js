@@ -6,7 +6,7 @@ import './styles.css'
 
 import api from '~/services/api';
 
-function Modules() {
+function Dashboard() {
   const [consultation, setConsultation] = useState([]);
 
   useEffect(() => {
@@ -28,7 +28,7 @@ function Modules() {
   return (
     <div className="profile-container">
     <header>
-        <Link className="button" to="incidents/new">Cadastrar nova consulta</Link>
+        <Link className="button" to="register">Cadastrar nova consulta</Link>
     </header>
 
     <h1>Consultas Cadastrados</h1>
@@ -36,8 +36,8 @@ function Modules() {
     <ul>
       {consultation.map(consult => (
         <li key={consult.id}>
-          <strong>Médico:</strong>
-          <p>{consult.doctor.name}</p>
+            <strong>Médico:</strong>
+            <p>{consult.doctor.name}</p>
             <strong>Especialidade:</strong>
             <p>{consult.doctor.specialty}</p>
             <strong>Paciente:</strong>
@@ -45,7 +45,7 @@ function Modules() {
             <strong>Data da consulta:</strong>
             <p>{moment(consult.consultation_date).format("D/M/YYYY")}</p>
             <strong>Horário da consulta:</strong>
-            <p>{moment(consult.consultation_date).format("h:mm")}</p>
+            <p>{moment(consult.consultation_date).format("HH:mm")}</p>
 
             <button onClick={() => handleDeleteIncident(consult.id)} type="button">
                 <FiTrash2 size={20} color="#E02041" />
@@ -57,4 +57,4 @@ function Modules() {
 );
 }
 
-export default Modules;
+export default Dashboard;

@@ -2,19 +2,21 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 import { useForm } from 'react-hook-form';
-import { isBefore, startOfHour, parseISO } from 'date-fns';
 
 import api from '~/services/api';
 
 import { Container, Content } from './styles';
-import { toast } from 'react-toastify';
+import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
 
-function Register() {
+function Update() {
   const [doctors, setDoctors] = useState([]);
   const [patients, setPatients] = useState([]);
   const [specialty, setSpecialty] = useState(null);
   const [selectedValue, setSelectedValue] = useState(null);
   const { register, handleSubmit } = useForm({});
+
+  const params = useParams()
+
 
   useEffect(() => {
     api.get('doctors').then((response) => {
@@ -40,14 +42,8 @@ function Register() {
   const onSubmit = async (data, e) => {
     const { consultation_date, doctor_id, patient_id } = data;
 
-    const hourStart = startOfHour(parseISO(consultation_date));
 
-    if (isBefore(hourStart, new Date())) {
-      toast.error('Data de consulta não pode ser anterior a data atual')
-      return
-    }
-
-    await api.post('consult', {
+    await api.put(`consult/${params.id}`, {
       consultation_date,
       doctor_id,
       patient_id,
@@ -95,4 +91,4 @@ function Register() {
   );
 }
 
-export default Register;
+export default Update;

@@ -1,5 +1,6 @@
 import { getRepository } from 'typeorm';
 import { Response, Request } from 'express';
+import { startOfHour, parseISO, isBefore } from 'date-fns';
 
 import Consultation from '../models/Consultation';
 
@@ -27,10 +28,7 @@ class ConsultationController {
     const { id } = request.params;
 
     const consultationsRepository = getRepository(Consultation);
-    const consultation = await consultationsRepository.update(
-      { id },
-      request.body,
-    );
+    const consultation = await consultationsRepository.update(id, request.body);
 
     return response.status(200).json(consultation);
   }
@@ -40,8 +38,26 @@ class ConsultationController {
 
     const consultationsRepository = getRepository(Consultation);
 
+    const hourStart = startOfHour(parseISO(consultation_date));
+
+    // if (isBefore(hourStart, new Date())) {
+    //   return response
+    //     .status(400)
+    //     .json({ error: 'Past date are not permitted' });
+    // }
+
+    const checkAvailability = await consultationsRepository.findOne({
+      where: { consultation_date: hourStart, doctor_id },
+    });
+
+    if (checkAvailability) {
+      return response
+        .status(400)
+        .json({ error: 'Consultation date is not available' });
+    }
+
     const consultation = consultationsRepository.create({
-      consultation_date,
+      consultation_date: hourStart,
       doctor_id,
       patient_id,
     });
